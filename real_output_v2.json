@@ -1,0 +1,58 @@
+{
+  "ats_score": 68,
+  "score_breakdown": {
+    "semantic_match": 34.8,
+    "keyword_match": 61.9,
+    "experience_fit": 76.0,
+    "impact_score": 100.0,
+    "format_score": 80.0,
+    "soft_skills": 54.0
+  },
+  "verifiability_score": 0,
+  "skill_match": {
+    "matched": [
+      "JavaScript",
+      "TypeScript",
+      "React.js",
+      "Node.js",
+      "Python",
+      "Next.js",
+      "Express.js",
+      "Flask",
+      "FastAPI",
+      "PostgreSQL",
+      "MongoDB",
+      "Docker",
+      "AWS",
+      "Git",
+      "LangChain",
+      "Redis"
+    ],
+    "missing": [
+      "GraphQL"
+    ],
+    "partial": [],
+    "implicit": [
+      "Kubernetes",
+      "CI/CD"
+    ],
+    "stale": []
+  },
+  "readability": {
+    "avg_sentence_length": 0,
+    "reading_grade_level": 0,
+    "skill_density_percent": 0,
+    "quantification_rate_percent": 0,
+    "overused_buzzwords": [],
+    "found_sections": [],
+    "missing_sections": [],
+    "section_coverage_score": 0
+  },
+  "bs_flags": [],
+  "interview_questions": [],
+  "domain_fit": "Medium",
+  "experience_fit": "Medium",
+  "key_gaps": [],
+  "strong_points": [],
+  "recommendations": []
+}

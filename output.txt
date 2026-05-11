@@ -1,0 +1,4 @@
+﻿Found 27 free models.
+Testing nvidia/nemotron-3-super-120b-a12b:free...
+SUCCESS: nvidia/nemotron-3-super-120b-a12b:free
+Wrote nvidia/nemotron-3-super-120b-a12b:free to .env!

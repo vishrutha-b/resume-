@@ -1,0 +1,62 @@
+{
+  "error": null,
+  "evaluation": {
+    "ats_score": 75,
+    "bs_flags": [],
+    "domain_fit": "High",
+    "experience_fit": "High",
+    "interview_questions": [],
+    "key_gaps": [
+      "Lack of explicit experience with Trading/FIX protocols, which was listed as a 'good-to-have' for the Global Markets Technology department.",
+      "Candidate mentioned ELK but explicitly missing production Datadog usage, which is preferred."
+    ],
+    "recommendations": [
+      "Proceed to technical interview prioritizing questions on EKS networking and security profiles.",
+      "Assess candidate's ability to quickly adapt to Datadog/Splunk based on their strong Prometheus/ELK experience.",
+      "Inquire further about practical applications of HashiCorp Vault within their CI/CD pipelines."
+    ],
+    "score_breakdown": {
+      "experience_fit": 91.0,
+      "format_score": 85.0,
+      "impact_score": 66.7,
+      "keyword_match": 68.5,
+      "semantic_match": 77.8,
+      "soft_skills": 50.0
+    },
+    "skill_match": {
+      "implicit": [
+        "Spinnaker"
+      ],
+      "matched": [
+        "Kubernetes",
+        "Terraform",
+        "Ansible",
+        "CI/CD",
+        "Jenkins",
+        "ArgoCD",
+        "Python",
+        "Go",
+        "Datadog",
+        "Splunk",
+        "Prometheus",
+        "Grafana",
+        "AWS"
+      ],
+      "missing": [],
+      "partial": [],
+      "stale": [
+        "sing MTTR during P1 incidents by 45%.\nSenior DevOps Engineer | Capital Markets I"
+      ]
+    },
+    "strong_points": [
+      "Exceptional alignment with mandatory Kubernetes, EKS, and Terraform requirements.",
+      "Demonstrated enterprise-scale impact (migrating monoliths to microservices, 300% volume increase).",
+      "Strong background in financial services ('Capital Markets Inc.', 'FinTech Global Solutions'), satisfying the highly regulated environment prerequisite.",
+      "Relevant proficiency in Python and advanced CI/CD tooling (Jenkins, ArgoCD)."
+    ],
+    "verifiability_score": 66
+  },
+  "evaluation_id": 26,
+  "file_name": "alexander_chen_resume.docx",
+  "version": 1
+}

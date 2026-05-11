@@ -1,0 +1,4 @@
+{
+  "error": "Failed to communicate with LLM: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+  "file_name": "john_doe_resume.docx"
+}

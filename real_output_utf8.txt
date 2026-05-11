@@ -1,0 +1,71 @@
+Initializing ATSEvaluator...
+Evaluating with real LLM endpoint...
+2026-03-19 16:24:09,405 | INFO     | ats_evaluator | Starting ATS Evaluation using model arcee-ai/trinity-mini:free
+2026-03-19 16:24:36,500 | INFO     | ats_evaluator | Successfully evaluated resume and validated schema.
+
+--- JSON OUTPUT ---
+{
+  "ats_score": 85,
+  "verifiability_score": 75,
+  "skill_match": {
+    "matched": [
+      "JavaScript",
+      "TypeScript",
+      "Python",
+      "React.js",
+      "Next.js",
+      "Flask",
+      "FastAPI",
+      "LangChain",
+      "LangGraph",
+      "MCP",
+      "PostgreSQL",
+      "MongoDB",
+      "MySQL",
+      "Redis",
+      "Docker",
+      "AWS",
+      "OCI",
+      "Linux",
+      "Git"
+    ],
+    "missing": [],
+    "partial": [],
+    "implicit": [
+      "AI agents / tool orchestration systems",
+      "blockchain / EVM-based systems",
+      "real-time or automation systems"
+    ],
+    "stale": []
+  },
+  "bs_flags": [
+    "Vague claims of 'production-grade' systems without metrics",
+    "Lack of quantifiable impact in hackathon wins",
+    "Generic descriptions of 'low-latency' responses"
+  ],
+  "interview_questions": [
+    "Describe your implementation of LangChain for Neeve's AI automation platform. How did you handle tool discovery and access policies?",
+    "Walk through your deployment of the emergency call management system. How did you ensure low-latency responses under concurrent usage?",
+    "Explain your approach to integrating blockchain systems (OCI/AWS) with AI workflows. What challenges did you face with EVM-based systems?",
+    "How would you architect a system to orchestrate multiple services for an AI assistant? What failure handling mechanisms would you implement?",
+    "Discuss your experience with AI agents. How would you design a privacy-preserving system like the EthGlobal project?"
+  ],
+  "domain_fit": "High",
+  "experience_fit": "High",
+  "key_gaps": [
+    "Limited DevOps exposure (no CI/CD, monitoring)",
+    "Shallow blockchain implementation depth",
+    "No explicit experience with real-time systems"
+  ],
+  "strong_points": [
+    "Proven AI system design (Neeve, MITSquare)",
+    "Production deployment experience (Docker/AWS)",
+    "Patent holder with research publications",
+    "Hackathon winner with tangible prototypes"
+  ],
+  "recommendations": [
+    "Gain DevOps experience through CI/CD pipelines and monitoring tools",
+    "Deepen blockchain knowledge with smart contract audits and cross-chain protocols",
+    "Quantify achievements with metrics (e.g., 'reduced latency by X%', 'automated Y% of workflows')"
+  ]
+}

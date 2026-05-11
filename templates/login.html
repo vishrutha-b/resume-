@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura ATS | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+        .auth-card { max-width: 450px; width: 100%; text-align: center; }
+        .auth-card h2 { margin-bottom: 2rem; }
+        .auth-input { width: 100%; background: var(--bg-input); border: 1px solid var(--border-subtle); padding: 1.2rem; border-radius: var(--radius-md); color: white; margin-bottom: 1rem; font-family: inherit; transition: 0.3s; }
+        .auth-input:focus { outline: none; border-color: var(--primary); background: rgba(15, 23, 42, 0.8); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+        .auth-link { color: var(--text-muted); font-size: 0.9rem; display: block; margin-top: 1.5rem; text-decoration: none; transition: 0.3s; }
+        .auth-link:hover { color: white; }
+    </style>
+</head>
+<body>
+    <div class="mesh-bg"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <div class="auth-container">
+        <div class="premium-card auth-card fade-up">
+            <div class="card-glow"></div>
+            <div class="card-content">
+                <div class="logo justify-center" style="justify-content: center; margin-bottom: 1rem;">
+                    <div class="logo-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="url(#logo-grad)" stroke-width="2.5"><defs><linearGradient id="logo-grad"><stop offset="0%" stop-color="#60a5fa" /><stop offset="100%" stop-color="#c084fc" /></linearGradient></defs><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <h1>Aura<span class="gradient-text">ATS</span></h1>
+                </div>
+                <h2>Secure Login</h2>
+                
+                <form id="loginForm">
+                    <input type="text" id="username" class="auth-input" placeholder="Username" required>
+                    <input type="password" id="password" class="auth-input" placeholder="Password" required>
+                    
+                    <button type="submit" class="btn-magic">
+                        <span class="btn-bg"></span>
+                        <span class="btn-text" id="btnText">Authenticate</span>
+                    </button>
+                    <div id="errorAlert" class="alert error hidden" style="margin-top: 1rem;"></div>
+                </form>
+                
+                <a href="/register" class="auth-link">Need an access pass? Register here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnText');
+            btn.textContent = 'Verifying...';
+            
+            try {
+                const res = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    window.location.href = '/';
+                } else {
+                    document.getElementById('errorAlert').textContent = data.error || 'Login Failed';
+                    document.getElementById('errorAlert').classList.remove('hidden');
+                }
+            } catch (err) {
+                document.getElementById('errorAlert').textContent = 'Network Error';
+                document.getElementById('errorAlert').classList.remove('hidden');
+            } finally {
+                btn.textContent = 'Authenticate';
+            }
+        });
+    </script>
+</body>
+</html>

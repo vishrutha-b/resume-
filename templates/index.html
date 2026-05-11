@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura ATS | AI Resume Screener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=2.0">
+</head>
+<body>
+    
+    <!-- Animated Background Elements -->
+    <div class="mesh-bg"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    
+    <div class="dashboard-container">
+        <!-- Floating Premium Header -->
+        <header class="ultra-header" style="justify-content: space-between;">
+            <div class="logo">
+                <div class="logo-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="url(#logo-grad)" stroke-width="2.5"><defs><linearGradient id="logo-grad"><stop offset="0%" stop-color="#60a5fa" /><stop offset="100%" stop-color="#c084fc" /></linearGradient></defs><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <h1>Aura<span class="gradient-text">ATS</span></h1>
+            </div>
+
+
+
+            <div class="eval-nav" style="display: flex; gap: 1rem; align-items: center;">
+                <a href="/" style="color: white; text-decoration: none; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3);">Screen</a>
+                <a href="/evaluations" style="color: #94a3b8; text-decoration: none; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500; border: 1px solid transparent; transition: 0.3s;" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.color='#94a3b8'; this.style.background='transparent'">Dashboard</a>
+            </div>
+
+            <div style="display: flex; gap: 1.5rem; align-items: center;">
+                <div class="header-badge">Enterprise Edition</div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <!-- Left Column: Input Form -->
+            <section class="input-panel premium-card fade-up" style="animation-delay: 0.1s;">
+                <div class="card-glow"></div>
+                <div class="card-content">
+                    <h2>Candidate Analysis</h2>
+                    <p class="subtitle">Deploy our deterministic AI screening engine against any criteria.</p>
+                    
+                    <form id="screenerForm">
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                                <label for="resume" style="margin-bottom: 0;">Resume Document</label>
+                                <button type="button" class="clear-btn hidden" id="clearFileBtn" title="Remove File">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                            </div>
+                            <div class="file-drop-zone">
+                                <input type="file" id="resume" name="resume" accept=".pdf,.docx" required>
+                                <label for="resume" class="file-label-box">
+                                    <div class="upload-icon">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    </div>
+                                    <span id="fileNameDisplay" class="file-name-text">Drag & drop or browse .PDF / .DOCX</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                                <label for="job_desc" style="margin-bottom: 0;">Job Description Matrix</label>
+                                <button type="button" class="clear-btn hidden" id="clearTextBtn" title="Clear Text">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                            </div>
+                            <div class="textarea-wrapper">
+                                <textarea id="job_desc" name="job_desc" rows="11" placeholder="Enter full job description, mandatory requirements, and preferred technology stacks..." required></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="btn-magic">
+                            <span class="btn-bg"></span>
+                            <span class="btn-text">Execute Screening</span>
+                            <div class="spinner loader-hidden" id="btnSpinner"></div>
+                        </button>
+                        
+                        <div id="errorAlert" class="alert error hidden"></div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Right Column: Results Dashboard -->
+            <section class="results-panel premium-card hidden" id="resultsPanel">
+                <div class="card-glow results-glow"></div>
+                <div class="card-content">
+                    <div class="results-header">
+                        <h2>Evaluation Metrics</h2>
+                        <span id="resultFileName" class="badge-file"></span>
+                    </div>
+
+                    <div class="score-showcase">
+                        <div class="score-ring-container">
+                            <div class="circular-progress">
+                                <svg viewBox="0 0 36 36">
+                                    <defs>
+                                        <linearGradient id="score-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#3b82f6" />
+                                            <stop offset="100%" stop-color="#a855f7" />
+                                        </linearGradient>
+                                        <filter id="glow">
+                                            <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle-chart" id="scoreRing" stroke="url(#score-grad)" filter="url(#glow)" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <text x="18" y="21.5" class="score-text-value" id="atsScoreValue">0</text>
+                                </svg>
+                            </div>
+                            <p class="score-label">Enterprise Match</p>
+                        </div>
+
+                        <div class="secondary-stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Domain Fit</div>
+                                <div class="stat-value" id="domainFit">Evaluating</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Experience Fit</div>
+                                <div class="stat-value" id="expFit">Evaluating</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="skills-analysis">
+                        <h3 class="section-title">Technological Alignment</h3>
+                        <div class="skills-grid" id="skillsGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="evaluation-detail">
+                        <div class="detail-block block-strong">
+                            <div class="block-header">
+                                <div class="block-icon success-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                </div>
+                                <h3>Outstanding Strengths</h3>
+                            </div>
+                            <ul id="strongPointsList"></ul>
+                        </div>
+                        
+                        <div class="detail-block block-gaps">
+                            <div class="block-header">
+                                <div class="block-icon danger-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                </div>
+                                <h3>Identified Gaps</h3>
+                            </div>
+                            <ul id="keyGapsList"></ul>
+                        </div>
+
+                        <div class="detail-block block-rec">
+                            <div class="block-header">
+                                <div class="block-icon info-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline><polyline points="7.5 19.79 7.5 14.6 3 12"></polyline><polyline points="21 12 16.5 14.6 16.5 19.79"></polyline><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                </div>
+                                <h3>AI Recommendations</h3>
+                            </div>
+                            <ul id="recommendationsList"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons for Optimization & Preview -->
+                    <div class="action-footer" style="margin-top: 2rem; display: flex; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2rem;">
+                        <button id="optimizeBtn" class="btn-magic" style="flex: 1;">
+                            <span class="btn-bg" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);"></span>
+                            <span class="btn-text">Generate Professional Resume</span>
+                            <div class="spinner loader-hidden" id="optimizeSpinner"></div>
+                        </button>
+                        <a id="previewBtn" href="#" target="_blank" class="btn-glass hidden" style="flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.95rem;">
+                            View Premium PDF Layout
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
