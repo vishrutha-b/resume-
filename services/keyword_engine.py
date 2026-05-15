@@ -62,10 +62,10 @@ def compute_keyword_score(
             required_hits += 1
         elif match_result == "implicit":
             implicit.append(skill)
-            required_hits += 0.4  # Implicit = 40% credit
+            required_hits += 1.0  # Implicit matches are valid synonyms, give full credit
         elif match_result == "partial":
             partial.append(skill)
-            required_hits += 0.1  # Partial = 10% credit
+            required_hits += 0.5  # Partial = 50% credit
         else:
             missing.append(skill)
     
@@ -80,10 +80,10 @@ def compute_keyword_score(
             preferred_hits += 1
         elif match_result == "implicit":
             implicit.append(skill)
-            preferred_hits += 0.4
+            preferred_hits += 1.0
         elif match_result == "partial":
             partial.append(skill)
-            preferred_hits += 0.1
+            preferred_hits += 0.5
         else:
             missing.append(skill)
     
@@ -94,8 +94,17 @@ def compute_keyword_score(
     required_pct = (required_hits / total_required) * 100
     preferred_pct = (preferred_hits / total_preferred) * 100
     
-    # 70% weight to required, 30% to preferred
-    keyword_score = (required_pct * 0.7) + (preferred_pct * 0.3)
+    # Dynamically adjust weights if one category is empty
+    if len(required_skills) == 0 and len(preferred_skills) == 0:
+        keyword_score = 100.0  # No requirements means perfect match
+    elif len(preferred_skills) == 0:
+        keyword_score = required_pct  # 100% weight to required
+    elif len(required_skills) == 0:
+        keyword_score = preferred_pct  # 100% weight to preferred
+    else:
+        # 70% weight to required, 30% to preferred
+        keyword_score = (required_pct * 0.7) + (preferred_pct * 0.3)
+        
     keyword_score = min(100.0, max(0.0, keyword_score))
     
     # Detect keyword stuffing
@@ -165,7 +174,7 @@ def _check_skill_match(skill: str, resume_skills: list, resume_text: str) -> str
     return "none"
 
 def _detect_keyword_stuffing(text: str) -> List[str]:
-    """Detect if skills appear suspiciously often (>5 times)."""
+    """Detect if skills appear suspiciously often (>10 times in a resume context)."""
     flags = []
     words = re.findall(r"\b\w+\b", text.lower())
     word_counts = {}
@@ -175,7 +184,8 @@ def _detect_keyword_stuffing(text: str) -> List[str]:
     
     tech_keywords = {"react", "python", "java", "aws", "docker", "kubernetes", "node", "flask", "angular"}
     for keyword in tech_keywords:
-        if word_counts.get(keyword, 0) > 5:
+        # Threshold raised to 10: legitimate ATS-optimized resumes repeat keywords across sections
+        if word_counts.get(keyword, 0) > 10:
             flags.append(f"'{keyword}' appears {word_counts[keyword]} times — possible keyword stuffing")
     
     return flags

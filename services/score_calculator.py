@@ -11,12 +11,12 @@ logger = get_logger(__name__)
 
 # Transparent scoring weights
 WEIGHTS = {
-    "semantic_match": 0.10,   # 10% - Contextual understanding
-    "keyword_match": 0.40,    # 40% - Direct skill coverage
+    "semantic_match": 0.20,   # 20% - Contextual understanding (raised from 10%)
+    "keyword_match":  0.35,   # 35% - Direct skill coverage (lowered from 40%)
     "experience_fit": 0.20,   # 20% - Years + role relevance
-    "impact_score": 0.15,     # 15% - Quantified achievements
-    "format_score": 0.05,     # 5% - ATS readability (placeholder)
-    "soft_skills": 0.10,      # 10% - Leadership, communication signals
+    "impact_score":   0.15,   # 15% - Quantified achievements
+    "format_score":   0.05,   # 5%  - ATS readability
+    "soft_skills":    0.05,   # 5%  - Leadership, communication signals
 }
 
 @dataclass
@@ -125,7 +125,7 @@ def _compute_format_score(text: str) -> float:
     if len(headers) < 2 and bullet_count < 3:
         score -= 20
         
-    return max(0, min(100, score))
+    return max(0, min(100, score + 10))  # Give it the final 10 points to allow reaching 100 if structurally sound
 
 def _compute_soft_skills_score(text: str) -> float:
     """Enhanced soft skill detection using professional vocabulary."""

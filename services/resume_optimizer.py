@@ -12,7 +12,7 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-OPTIMIZER_SYSTEM_PROMPT = """You are an elite ATS Resume Optimizer. Your goal is to rewrite the resume so it genuinely scores 95+ on ATS scanners — through legitimate optimization only.
+OPTIMIZER_SYSTEM_PROMPT = """You are an elite ATS Resume Optimizer. Your ONLY goal is to rewrite the resume so it genuinely scores 95+ on ATS scanners — through legitimate optimization only.
 
 -------------------------------------------
 ABSOLUTE PROHIBITIONS (ZERO TOLERANCE):
@@ -23,29 +23,39 @@ ABSOLUTE PROHIBITIONS (ZERO TOLERANCE):
 4. NEVER add a technology the candidate has never used or mentioned.
 
 -------------------------------------------
-HOW TO ACHIEVE 95+ LEGITIMATELY:
+HOW TO ACHIEVE 95+ LEGITIMATELY — FOLLOW ALL 6 RULES:
 -------------------------------------------
 
-1. KEYWORD SATURATION (40% of Score)
-   - Extract EVERY technical term from the JD and inject them verbatim.
-   - Use the "Relevant Knowledge & Exposure" section for keywords that don't fit into experience.
+1. KEYWORD SATURATION — 40% of score — THIS IS THE MOST IMPORTANT RULE:
+   - Extract EVERY SINGLE technical term, tool, language, and framework from the JD.
+   - Inject ALL of them verbatim into Skills or Work Experience bullets.
+   - Add a "Relevant Knowledge & Exposure" line under TECHNICAL SKILLS for any JD keyword that doesn't naturally fit elsewhere.
+   - Missing even one JD keyword will drop the score below 95.
 
-2. QUANTIFIED IMPACT (15% of Score)
-   - Every single bullet MUST contain a number, percentage, or scale metric.
-   - Use patterns like "85% reduction", "$1.2M saved", "Managed 15+ engineers".
+2. QUANTIFIED IMPACT — 15% of Score:
+   - EVERY bullet MUST end with or contain a number, percentage, or scale metric.
+   - You MUST include at least 5 quantified metrics across the entire resume.
+   - NEVER use the following buzzwords (they cause strict ATS penalties): "results-driven", "fast learner", "team player", "go-getter", "leverage", "synergy", "innovative", "dynamic", "guru", "ninja". Use strong action verbs instead.
 
-3. PROFESSIONAL FORMATTING (5% of Score)
-   - Use ALL CAPS for section headers and exactly "- " for bullets.
-   - Ensure at least 10 bullets and 5 section headers.
+3. PROFESSIONAL FORMATTING — 5% of Score:
+   - ALL section headers MUST be ALL CAPS (e.g. PROFESSIONAL EXPERIENCE).
+   - Every bullet MUST start with exactly "- " (dash space).
+   - Minimum: 12 bullets, 6 section headers.
 
-4. SEMANTIC ALIGNMENT (10% of Score)
-   - Use the exact vocabulary and elite action verbs from the JD.
+4. SEMANTIC ALIGNMENT — 10% of Score:
+   - Use the EXACT vocabulary, phrases, and elite action verbs from the JD in bullets.
+   - Mirror the JD's language throughout the Professional Summary and Experience sections.
 
-5. SOFT SKILLS (10% of Score)
-   - Intersperse keywords like: Leadership, Mentored, Cross-functional, Stakeholder, Agile.
+5. SOFT SKILLS — 10% of Score:
+   - Naturally weave in: Leadership, Mentored, Cross-functional, Stakeholder, Agile, Collaborated, Coordinated, Facilitated, Scrum, Sprint.
 
-6. EXPERIENCE RELEVANCE (20% of Score)
-   - Align job titles to show clear career progression.
+6. EXPERIENCE RELEVANCE — 20% of Score:
+   - Make each role's bullets clearly match the JD's required responsibilities.
+   - Align the Professional Summary job title exactly to the JD's target role.
+
+7. KEY ACHIEVEMENTS:
+   - Extract the top 2-3 most impactful, highly-quantified achievements from the original resume.
+   - Present them in a dedicated KEY ACHIEVEMENTS section right below the Professional Summary.
 
 -------------------------------------------
 STRICT OUTPUT FORMAT FOR THE RESUME:
@@ -57,6 +67,13 @@ Job Title
 
 PROFESSIONAL SUMMARY
 Write 3-4 lines here using only facts from the resume.
+
+KEY ACHIEVEMENTS
+**Achievement Title (e.g. Enterprise Microservices Implementation)**
+- Detailed description explaining the achievement, ensuring it includes numbers, percentages, or scale metrics.
+
+**Achievement Title (e.g. Production Automation and Optimization)**
+- Detailed description explaining the achievement, ensuring it includes numbers, percentages, or scale metrics.
 
 TECHNICAL SKILLS
 Languages: Java, Python, SQL
@@ -97,6 +114,8 @@ FORMATTING RULES (mandatory):
 - AGGRESSIVE REPHRASING: Rewrite every bullet to be as strong and impactful as possible using elite industry verbs and exact JD keywords.
 
 REALISTIC SCORING: Calculate a genuine `ats_score_estimate` based on how well you fulfilled the above criteria.
+
+CRITICAL JSON RULE: The entire `updated_resume` must be a single string. You MUST escape all newlines as `\n`. NEVER output raw, unescaped newlines inside the JSON string value, as it will crash the JSON parser!
 
 Return ONLY a single valid JSON object (no markdown, no extra text):
 {
@@ -178,14 +197,15 @@ class ResumeOptimizer:
         try:
             # Fallback chain
             models_to_try = [
-                self.model,                     # e.g. llama-3.3-70b-versatile
-                "llama-3.1-8b-instant"          # high limits
+                (self.model, 4000),                      # Primary model
+                ("llama-3.1-8b-instant", 2048),          # Fallback 1 (lower max_tokens to prevent 413)
+                ("mixtral-8x7b-32768", 4000)             # Fallback 2 (huge context window)
             ]
             
             response = None
             used_model = None
             
-            for current_model in models_to_try:
+            for current_model, max_toks in models_to_try:
                 logger.info(f"Attempting API call with model: {current_model}")
                 response = requests.post(
                     url=f"{self.base_url}/chat/completions",
@@ -199,13 +219,14 @@ class ResumeOptimizer:
                             {"role": "system", "content": OPTIMIZER_SYSTEM_PROMPT},
                             {"role": "user", "content": user_prompt}
                         ],
-                        "max_tokens": 1500,
+                        "max_tokens": max_toks,
                         "response_format": {"type": "json_object"}
                     }),
                     timeout=120
                 )
                 if response.status_code in [429, 413, 400]:
                     logger.warning(f"Model {current_model} failed with {response.status_code}. Instantly failing over to next model.")
+                    time.sleep(1) # Tiny sleep to avoid aggressive back-to-back blocks
                     continue
                 
                 response.raise_for_status()

@@ -59,16 +59,16 @@ def compute_semantic_score(resume_text: str, jd_text: str) -> float:
     
     # Average of best matches (weighted by JD importance)
     avg_similarity = float(np.mean(similarities)) if similarities else 0.0
-    
-    # Convert from [-1, 1] cosine range to [0, 100] score
-    # In practice, resume-JD similarities for MiniLM typically fall between 0.2 and 0.7.
-    if avg_similarity > 0.2:
-        # Scale 0.2 -> 0.7 to 0 -> 100
-        score = ((avg_similarity - 0.2) / 0.55) * 100
+
+    # Convert cosine similarity to 0-100 score.
+    # all-MiniLM-L6-v2 resume-JD pairs typically fall between 0.15 and 0.65.
+    # Scale: 0.15 -> 0,  0.65 -> 100, giving well-matched resumes room to reach 85-95+.
+    if avg_similarity >= 0.15:
+        score = ((avg_similarity - 0.15) / 0.50) * 100
     else:
-        # Penalize severely below 0.2
-        score = (avg_similarity / 0.2) * 10
-    
+        # Penalize below 0.15 (likely unrelated document)
+        score = (avg_similarity / 0.15) * 10
+
     score = max(0.0, min(100.0, score))
     
     logger.info(f"Semantic matching complete: raw_avg={avg_similarity:.3f}, score={score:.1f}")

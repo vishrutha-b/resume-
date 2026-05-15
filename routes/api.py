@@ -198,6 +198,17 @@ def optimize_resume(evaluation_id: str):
         final_score = new_eval.ats_score
         
         result["ats_score_estimate"] = final_score
+        
+        # Convert dataclass to dict for JSON serialization
+        import dataclasses
+        if dataclasses.is_dataclass(new_eval.score_breakdown):
+            result["updated_score_breakdown"] = dataclasses.asdict(new_eval.score_breakdown)
+        else:
+            result["updated_score_breakdown"] = vars(new_eval.score_breakdown) if hasattr(new_eval.score_breakdown, '__dict__') else new_eval.score_breakdown
+            
+        if "keyword_coverage" in result and isinstance(result["keyword_coverage"], dict):
+            result["keyword_coverage"]["matched_percent"] = result["updated_score_breakdown"].get("keyword_match", 100)
+            
         logger.info(f"Original Score: {eval_dict.get('ats_score')} -> Optimized Honest Score: {final_score}")
     except Exception as e:
         logger.error(f"Failed to calculate true ATS score for optimized resume: {e}")

@@ -80,24 +80,24 @@ def compute_impact_score(resume_text: str) -> Dict:
     vague_claims = list(dict.fromkeys(vague_claims))
     
     strong_claims = len(quantified_claims) + len(elite_claims)
-    total_claims = strong_claims + len(vague_claims)
     
-    if total_claims == 0:
-        # No impact claims at all — neutral score
-        impact_score = 50.0
-        verifiability = 50
-    else:
-        ratio = strong_claims / total_claims
-        impact_score = ratio * 100
-        verifiability = int((len(quantified_claims) / max(1, total_claims)) * 100)
+    # Base score on absolute number of strong claims (5+ is excellent)
+    if strong_claims == 0:
+        impact_score = 40.0
+        verifiability = 40
+    elif strong_claims == 1:
+        impact_score = 60.0
+    elif strong_claims == 2:
+        impact_score = 75.0
+    elif strong_claims >= 3:
+        # 3+ claims = 100
+        impact_score = 100.0
+        
+    verifiability = min(100, strong_claims * 20)
     
-    # Bonus: having strong claims is a positive signal
-    if strong_claims >= 3:
-        impact_score = min(100.0, impact_score + 15)
-    
-    # Penalty: too many vague claims
-    if len(vague_claims) > 5:
-        impact_score = max(0.0, impact_score - 10)
+    # Minor penalty for excessive buzzwords (only if extreme)
+    if len(vague_claims) > 4:
+        impact_score = max(0.0, impact_score - (len(vague_claims) - 4) * 2)
     
     logger.info(
         f"Impact analysis: quantified={len(quantified_claims)}, elite={len(elite_claims)}, "

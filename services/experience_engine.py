@@ -43,11 +43,10 @@ def compute_experience_score(
     
     # Score based on experience vs requirement
     if min_required_years == 0:
-        exp_score = 50.0  # No requirement specified, give lower default
+        exp_score = 100.0  # No requirement specified means experience is a non-issue
     elif total_years >= min_required_years:
-        # Meets or exceeds requirement
-        overshoot = total_years - min_required_years
-        exp_score = min(100.0, 65.0 + (overshoot * 3))
+        # Meets or exceeds requirement -> Full credit!
+        exp_score = 100.0
     else:
         # Below requirement — penalize proportionally
         ratio = total_years / max(min_required_years, 1)

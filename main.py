@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,10 +12,22 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Starting up FastAPI application...")
+    init_db()
+    logger.info(f"Connected to MongoDB at {Config.MONGO_URI}")
+    yield
+    # Shutdown
+    logger.info("Shutting down...")
+    close_db()
+
 app = FastAPI(
     title="Aura ATS API",
     description="Resume screening and optimization API",
-    version="2.0.0"
+    version="2.0.0",
+    lifespan=lifespan
 )
 
 # CORS configuration
@@ -29,18 +42,6 @@ app.add_middleware(
 # Mount static files
 os.makedirs("static", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Startup and Shutdown events
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Starting up FastAPI application...")
-    init_db()
-    logger.info(f"Connected to MongoDB at {Config.MONGO_URI}")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    logger.info("Shutting down...")
-    close_db()
 
 # Include routers
 app.include_router(web_router, tags=["Web UI"])
